@@ -1,0 +1,10 @@
+*__pycache__
+**/__pycache__/
+**/.idea/
+**/venv/
+.vonage-aws-generated
+.okta-cache
+.vonage-aws
+.accounts
+debug.log
+*.pyc

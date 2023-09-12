@@ -1,0 +1,27 @@
+name: 'semver-release-with-prefix'
+description: 'semver releaser, but with prefixes on monitored_directories'
+branding:
+  icon: 'git-merge'
+  color: 'white'
+inputs:
+  github_token:
+    description: 'A token with the permissions to access the repos in a particular organisation'
+    required: true
+  directories:
+    description: 'list of arrays of monitored_directories to check for changes'
+    required: true
+  prefix:
+    description: 'prefix to add to the tag'
+    default: ""
+  default_bump:
+    description: 'default bump to use if no changes are found'
+    default: 'patch'
+  glob_exluder:
+    description: 'Multiline glob pattern for exclusion'
+    default: ''
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - ${{ inputs.github_token }}
+#    - ${{ inputs.repo_filter }}
