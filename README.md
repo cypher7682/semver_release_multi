@@ -1,8 +1,9 @@
-# Multi Semver Release 
+# Multiple Semver Release 
 
 ## What it do
 
 This action will deploy a new release for multiple subdirectories inside a designated directory. 
+This is solely for the intention of deploying multiple releases from a single repository.
 
 If you have a repo such as this:
 
