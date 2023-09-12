@@ -149,9 +149,9 @@ breaker("End of commit analysis. Will do the following: ")
 
 for s, d in monitored_subdirs.items():
     if d["bump"] == "none":
-        print(f" - Subdir {s} doesn't need a bump")
+        print(f" - Subdir {s} - none")
     else:
-        print(f" - Subdir {s} needs a {d['bump']} bump")
+        print(f" - Subdir {s} - {d['bump'].upper()}")
 
 # get tags prefixed with subdir-
 # if a tag doesn't exist, create it
