@@ -148,7 +148,10 @@ for c in repo.walk(commit["after"]):
 breaker("End of commit analysis. Will do the following: ")
 
 for s, d in monitored_subdirs.items():
-    print(f" - Subdir {s} needs a {d['bump']} bump")
+    if d["bump"] == "none":
+        print(f" - Subdir {s} doesn't need a bump")
+    else:
+        print(f" - Subdir {s} needs a {d['bump']} bump")
 
 # get tags prefixed with subdir-
 # if a tag doesn't exist, create it
