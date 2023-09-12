@@ -204,7 +204,7 @@ for subdir, data in monitored_subdirs.items():
 
     tag = ""
     tag = f'{core.get_input("prefix")}-' if core.get_input('prefix') else ''
-    tag += f"{subdir}-v{ver}",
+    tag += f"{subdir}-v{ver}"
 
     r.create_git_release(
         tag=f"{subdir}-v{ver}",
