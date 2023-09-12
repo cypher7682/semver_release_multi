@@ -168,7 +168,7 @@ for subdir, data in monitored_subdirs.items():
     ver = "0.0.0"
     for tag in r.get_tags():
         if tag.name.startswith(f"{subdir}-"):
-            tag_ver = tag.name.split("-")[1]
+            tag_ver = tag.name.split("-")[-1]
             if tag_ver.startswith("v"):
                 tag_ver = tag_ver[1:]
             if semver.compare(tag_ver, ver) > 0:
