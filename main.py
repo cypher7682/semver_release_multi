@@ -185,7 +185,7 @@ for subdir, data in monitored_subdirs.items():
         message = f"Initialising {subdir}-v0.0.1 tag"
     # Skip where we haven't found a bump to perform.
     elif bump_type == "none":
-        print(f"'{subdir}' has a latest tag of {subdir}-v{ver}, but doesn't need bumping")
+        print(f"'{subdir}' has a latest tag of {subdir}-v{ver}, but it doesn't need bumping, so skipping")
         continue
     # Perform a bump!
     else:
