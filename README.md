@@ -33,12 +33,8 @@ on:
     paths-ignore:
       - '.github/**'
       - .gitignore
-      - .pre-commit-config.yaml
-      - .terraform-docs.yaml
       - '*.md'
       - '**/CODEOWNERS'
-      - Makefile
-      - renovate.json
 jobs:
   Tag-and-release:
     runs-on: ubuntu-latest
@@ -63,7 +59,7 @@ jobs:
           my_modules
 ```
 
-### Caveats
+## Caveats
 
 ### Subdirectories
 
