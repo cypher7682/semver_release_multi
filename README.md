@@ -3,7 +3,8 @@
 ## What it do
 
 This action will deploy a new release for multiple subdirectories inside a designated directory. 
-This is solely for the intention of deploying multiple releases from a single repository.
+This is solely for the intention of deploying multiple releases from a single repository, each with their own
+namespaced tag.
 
 If you have a repo such as this:
 
