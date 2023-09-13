@@ -196,6 +196,8 @@ for subdir, data in monitored_subdirs.items():
         print(f"No tag found for '{subdir}'. We will initialise one now.")
         # Set the version to the minimum version
         ver = core.get_input("minimum_version")
+        if ver.startswith("v"):
+            ver = ver[1:]
         # if ver is still 0.0.0 then we need to bump it
         # if it's not, we can assume the subdir hasn't changed, and just needs a new tag with no bump
         if bump_type == "none" and ver == "0.0.0":
