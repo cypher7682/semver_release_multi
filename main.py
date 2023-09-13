@@ -61,13 +61,13 @@ monitored_directories = {}
 monitored_subdirs = {}
 # There's definitely a better way of doing this, where we use subdirs instead of monitored dirs, I just can't be arsed.
 for d in core.get_input("directories").split("\n"):
-    print(f" - {d}")
+    print(f" Checking {d}")
     for sd in next(os.walk(d))[1]:
         if os.path.isdir(f"{d}/{sd}"):
-            print(f"Found {d}/{sd} for tag monitoring")
+            print(f"- {d}/{sd} found for tag monitoring")
             monitored_subdirs[sd] = {"bump": "none", "messages": []}
         else:
-            print(f"Found {d}/{sd} but it isn't a directory. Skipping.")
+            print(f"- {d}/{sd} found but it isn't a directory. Skipping.")
     monitored_directories[d] = {"subdirs": {}}
 
 try:
@@ -209,10 +209,11 @@ for subdir, data in monitored_subdirs.items():
             release_none_bump_anyway = True
 
     # Perform a bump!
+    ov = ver
     ver = bump(ver, bump_type)
     message = '\n'.join(data["messages"])
     if bump_type != "none":
-        print(f"'{subdir}' will be bumped to version v{ver}")
+        print(f"'{subdir}' will be bumped from v{ov} to v{ver} because bump was {bump_type}")
 
     tag = ""
     tag = f'{core.get_input("prefix")}-' if core.get_input('prefix') else ''
