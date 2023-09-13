@@ -19,6 +19,9 @@ inputs:
   glob_exluder:
     description: 'Multiline glob pattern for exclusion'
     default: ''
+  minimum_version:
+    description: 'Provide a minimum version number to start the versioning'
+    default: '0.0.0'
 runs:
   using: 'docker'
   image: 'Dockerfile'

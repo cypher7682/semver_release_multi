@@ -35,6 +35,13 @@ def bint(bump):
     none  = 0
     return locals()[bump]
 
+def bump(version, bump):
+    major = semver.Version.parse(version).bump_major()
+    minor = semver.Version.parse(version).bump_minor()
+    patch = semver.Version.parse(version).bump_patch()
+    none  = version
+    return locals()[bump]
+
 def bump_bigger(new, old):
     return bint(new) > bint(old)
 
@@ -135,9 +142,7 @@ for c in repo.walk(commit["after"]):
                         new=new_bump,
                         old=old_bump,
                     ):
-                        monitored_subdirs[subdir]["bump"] = detect_bump_type(
-                            c.message,
-                        )
+                        monitored_subdirs[subdir]["bump"] = new_bump
                         if old_bump == "none":
                             print(f"Setting bump to {new_bump} on '{subdir}'")
                         else:
@@ -158,14 +163,21 @@ for s, d in monitored_subdirs.items():
 # add a bump to the tag corresponding with the monitored_directories, with desired prefix
 
 breaker("Getting tag information to perform bumping")
+print(f"Logging into github")
 token = core.get_input("github_token")
 
 auth = Auth.Token(token)
 g = Github(auth=auth)
+print(f"Collecting repo data")
 r = g.get_repo(context.payload["repository"]["full_name"])
 
+breaker("Preparing bumps - Argument context is below:")
+print(f"Default bump: {core.get_input('default_bump')}")
+print(f"Minimum version: {core.get_input('minimum_version')}")
+print(f"Tag Prefix: {core.get_input('prefix')}")
+
 for subdir, data in monitored_subdirs.items():
-    breaker(f"'{subdir}'")
+    breaker(f"Bumping '{subdir}'")
     print("Getting existing tags")
     bump_type = data["bump"]
     ver = "0.0.0"
@@ -175,41 +187,42 @@ for subdir, data in monitored_subdirs.items():
             if tag_ver.startswith("v"):
                 tag_ver = tag_ver[1:]
             if semver.compare(tag_ver, ver) > 0:
-                print(f"Found a newer tag: {tag.name}")
+                print(f"Found a newer version: {tag.name}")
                 ver = tag_ver
 
-    # Module doesn't have a tag present. Initialise one.
+    # We didn't find a tag - so we need to make sure we make one
+    release_none_bump_anyway = False
     if ver == "0.0.0":
-        print(f"'{subdir}' has no tags. Will initialise a {subdir}-v0.0.1 tag")
-        ver = "0.0.1"
-        message = f"Initialising {subdir}-v0.0.1 tag"
-    # Skip where we haven't found a bump to perform.
-    elif bump_type == "none":
-        print(f"'{subdir}' has a latest tag of {subdir}-v{ver}, but it doesn't need bumping, so skipping")
-        continue
+        print(f"No tag found for '{subdir}'. We will initialise one now.")
+        # Set the version to the minimum version
+        ver = core.get_input("minimum_version")
+        # if ver is still 0.0.0 then we need to bump it
+        # if it's not, we can assume the subdir hasn't changed, and just needs a new tag with no bump
+        if bump_type == "none" and ver == "0.0.0":
+            print(f"Subdir '{subdir}' is not tagged, and has no bump, or minimum version. We will bump it from 0.0.0 with the default bump.")
+            bump_type = core.get_input("default_bump")
+        # If the bump is still None, it means we're on a minimum version, and need to release this version anyway
+        if bump_type == "none":
+            print(f"Subdir '{subdir}' is not tagged, and has no bump. We will release anyway to initialise versioning.")
+            release_none_bump_anyway = True
+
     # Perform a bump!
-    else:
-        print(f"'{subdir}' has a latest tag of {subdir}-v{ver}, but needs a {bump_type} bump")
-        ver = semver.Version.parse(ver)
-        if bump_type == "major":
-            ver = ver.bump_major()
-        elif bump_type == "minor":
-            ver = ver.bump_minor()
-        elif bump_type == "patch":
-            ver = ver.bump_patch()
-        else:
-            error(f"Unknown bump type {bump_type}")
-        message = '\n'.join(data["messages"])
-        print(f"Bumped to new version: {ver}")
+    ver = bump(ver, bump_type)
+    message = '\n'.join(data["messages"])
+    if bump_type != "none":
+        print(f"'{subdir}' will be bumped to version v{ver}")
 
     tag = ""
     tag = f'{core.get_input("prefix")}-' if core.get_input('prefix') else ''
     tag += f"{subdir}-v{ver}"
 
-    r.create_git_release(
-        tag=f"{subdir}-v{ver}",
-        name=f"{subdir}-v{ver}",
-        message=message,
-        target_commitish=commit["after"],
-    )
-    print(f"Created tag {subdir}-v{ver}")
+    if release_none_bump_anyway or bump_type != "none":
+        r.create_git_release(
+            tag=f"{subdir}-v{ver}",
+            name=f"{subdir}-v{ver}",
+            message=message,
+            target_commitish=commit["after"],
+        )
+        print(f"Created tag {subdir}-v{ver}")
+    else:
+        print(f"Skipping release of {subdir} as it has no bump to perform, and isn't an intial release")

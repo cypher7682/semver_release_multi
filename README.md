@@ -59,6 +59,24 @@ jobs:
           my_modules
 ```
 
+## Arguments
+
+Argument | Description | Default
+--- | --- | ---
+`github_token` | A token with the permissions to access the repos in a particular organisation | `required`
+`directories` | list of arrays of monitored_directories to check for changes | `required`
+`prefix` | prefix to add to the tag | `""`
+`default_bump` | default bump to use if no changes are found | `patch`
+`glob_exluder` | Multiline glob pattern for exclusion | `""`
+`minimum_version` | Provide a minimum version number to start the versioning. | `0.0.0`
+
+### Helpful tips on arguments
+
+`minimum_version` - you might want to use this when you already have a module with versioning, and you want to start
+the multi-versioning at that value. So if you have `v8.0.3` already deployed, rather than starting again, you can set 
+this to `8.0.3`, and it will start from there.
+
+
 ## Caveats
 
 ### Subdirectories
